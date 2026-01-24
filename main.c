@@ -13,7 +13,10 @@ struct kernel_version parse_version(char *version) {
 
 //  Compile the regex
     int compile_status = regcomp(&compiled_regex, pattern, REG_EXTENDED);
-    assert(compile_status == 0);
+    if (compile_status != 0) {
+        fprintf(stderr, "Error to compile the regex pattern");
+        exit(EXIT_FAILURE);
+    }
 //
 
     const char *str = version; // create a new pointer that points to the version string, since we'll do operations with offsets
