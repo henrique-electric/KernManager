@@ -22,12 +22,12 @@ struct kernel_version parse_version(char *version) {
     int exec_status = regexec(&compiled_regex, str, 4, match, 0);
     if (exec_status == REG_NOMATCH) {
         fprintf(stderr, "Invalid version of the kernel\n");
+        regfree(&compiled_regex);
         exit(EXIT_FAILURE);
     }
 //
 
     kversion.major = (int) str[match[1].rm_so] - '0';
-
     int converted_number = 0;   // Variable that will be used when converting the strings to integers;
 
     // Run throught the matches
@@ -55,7 +55,6 @@ struct kernel_version parse_version(char *version) {
         }
     }
 
-    
     regfree(&compiled_regex); // Free the regex allocated stuff
     return kversion;
 }
