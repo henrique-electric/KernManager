@@ -1,40 +1,40 @@
-#include <argp.h>
-#include <regex.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include "core.h"
 
-struct argp_option options[] = {
-    {.key = 'd', .name = "download", .arg = "VERSION", .doc = "Downloads a new kernel source from kernel.org"},
-    {.key = 'b', .name = "build", .arg = "VERSION", .doc = "Builds the given version kernel"},
-    {NULL},
-};
+struct kernel_version parse_version(char *version) {
+    size_t str_lenght = strlen(version);
+    struct kernel_version kversion = {0};
 
-error_t parser(int key, char *arg, struct argp_state *state) {
+    for (size_t i = 0; i < str_lenght; i++) {
+        // Major number
+        if (i == 0 && version[i + 1] == '.')
+            kversion.major = (uint8_t) version[i] - '0';
 
-    if (state->argc == 1) {
-        argp_help(state->root_argp, stdout, ARGP_HELP_STD_HELP, "KernManager");
-        exit(EXIT_FAILURE);
+        // Middel for model X.XX.X
+        if (i == 1 && version[i + 3] == '.') {
+            kversion.numbers_middle = 2;
+            kversion.middle = (((int) version[i + 1] - '0') * 10) + ((int) version[i + 2] - '0');
+        }
+        // Middle for model X.X.X
+        else if (i == 1 && version[i + 2] == '.') {
+            kversion.numbers_middle = 1;
+            kversion.middle = (int) version[i + 1] - '0';
+        }
+
+        // Minor version for model X.X.X
+        if (i == 3 && kversion.numbers_middle == 1 && version[i + 2] == '\0'){
+            kversion.minor = (int) version[i + 1] - '0';
+        }
+        // Model
+        else if (i == 3) {
+
+        }
+
     }
-    
-    switch (key)
-    {
-    case 'd':
-        ;
-        break;
-    
-    default:
-        return ARGP_ERR_UNKNOWN;
-    }
-
-    return 0;
+    return kversion;
 }
 
-struct argp argp_struct = {
-    .options = options,
-    .parser = parser
-};
 
 int main(int argc, char *argv[])
 {
-    return argp_parse(&argp_struct, argc, argv, 0, 0, 0);;
+    return parse_args(argc, argv);
 }
