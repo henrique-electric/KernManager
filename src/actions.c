@@ -39,7 +39,7 @@ int handle_link(const struct kernel_version *kversion) {
 // Alloc a buffer to hold the whole path
     full_url_len = kernel_url_len + version_path_len + linux_tarball_file_name_len + 1;
     full_url = (char *) malloc(full_url_len);
-    memset(full_url, full_url_len, 0);
+    memset(full_url, 0, full_url_len);
 //
     snprintf(full_url, kernel_url_len, kernel_url); // Moves the kernel url "https://cdn.kernel.org/pub/linux/kernel/" to the buffer
 
@@ -69,7 +69,7 @@ int download_kernel(const char *link) {
     size_t total_len_used = command_len + link_len;
 
     char *shell_command_buff = (char *) malloc(total_len_used);
-    memset(shell_command_buff, total_len_used, 0);
+    memset(shell_command_buff, 0, total_len_used);
     snprintf(shell_command_buff, total_len_used, "%s%s", "wget ", link);
 
     if (system(shell_command_buff) == 127)

@@ -38,7 +38,7 @@ struct kernel_version parse_version(char *version) {
     snprintf(buffer, 3, "%.*s", match[2].rm_eo - match[2].rm_so, str + match[2].rm_so);
     converted_number = atoi(buffer);
     kversion.middle = converted_number;
-    memset(buffer, sizeof(char), 0); // Clear buffer for the next number
+    memset(buffer, 0, sizeof(char)); // Clear buffer for the next number
 
 
     snprintf(buffer, 4, "%.*s", match[3].rm_eo - match[3].rm_so, str + match[3].rm_so);
