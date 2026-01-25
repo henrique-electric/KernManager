@@ -18,7 +18,7 @@ int handle_link(const struct kernel_version *kversion) {
 
 // Allocate a buffer to put the version path ex.: v6/. v5/ ...
     char *version_buff = (char*) malloc(version_path_len);
-    memset(version_buff, version_path_len, 0);
+    memset(version_buff, 0, version_path_len);
     snprintf(version_buff, version_path_len, "v%d.x/", kversion->major);
 //
 
