@@ -1,21 +1,26 @@
 #include <core.h>
 
 const char *kernel_url = "https://cdn.kernel.org/pub/linux/kernel/";
-int download_kernel(const struct kernel_version *kversion) {
+int handle_link(const struct kernel_version *kversion) {
+    if(!kversion)
+        return ERROR_HANDLE_LINK;
 
     size_t kernel_url_len = strlen(kernel_url) + 1;
-    size_t version_path_len = strlen("vx/") + 1; // x will be replaced with the major number
+    size_t version_path_len = strlen("vx.x/") + 1; // x will be replaced with the major number
     size_t linux_prefix_len = strlen("linux-x") + 1;
     size_t linux_suffix_len = strlen(".tar.xz") + 1;
 
     size_t middle_version_len = 0;
     size_t minor_version_len = 0;
     size_t full_url_len = 0;
-    char *url_buff = (char*) malloc(version_path_len);
-    char *full_url = NULL;
-    memset(url_buff, version_path_len, 0);
 
-    snprintf(url_buff, version_path_len, "v%d/", kversion->major);
+    char *full_url = NULL;
+
+// Allocate a buffer to put the version path ex.: v6/. v5/ ...
+    char *version_buff = (char*) malloc(version_path_len);
+    memset(version_buff, version_path_len, 0);
+    snprintf(version_buff, version_path_len, "v%d.x/", kversion->major);
+//
 
     if (kversion->middle < 10)
         middle_version_len = 1;
@@ -28,18 +33,49 @@ int download_kernel(const struct kernel_version *kversion) {
         minor_version_len = 2;
     else
         minor_version_len = 3;
+
+    size_t linux_tarball_file_name_len = linux_prefix_len + middle_version_len + minor_version_len + linux_suffix_len + 1;
     
-    full_url_len = kernel_url_len + version_path_len + middle_version_len + minor_version_len + 1;
+// Alloc a buffer to hold the whole path
+    full_url_len = kernel_url_len + version_path_len + linux_tarball_file_name_len + 1;
     full_url = (char *) malloc(full_url_len);
     memset(full_url, full_url_len, 0);
-    snprintf(full_url, kernel_url_len, kernel_url);
-    printf("%s\n", full_url);
+//
+    snprintf(full_url, kernel_url_len, kernel_url); // Moves the kernel url "https://cdn.kernel.org/pub/linux/kernel/" to the buffer
 
-    free(url_buff);
+    char *kernel_url_eo = full_url + kernel_url_len - 1; // Moves to the end of the kernel url inside the string
+    snprintf(kernel_url_eo, version_path_len, version_buff); // Moves the version path to the buffer "vx/"
+
+    kernel_url_eo = kernel_url_eo + version_path_len - 1; // Moves to the end of the version path inside inside the string
+    snprintf(kernel_url_eo, linux_tarball_file_name_len, "linux-%d.%d.%d.tar.xz", kversion->major, kversion->middle, kversion->minor); // Moves the linux tarball name at the end "linux-x.xx.xxx.tar.xz"
+
+    download_kernel(full_url);
+
+    // Free up all malloc memory and set pointers to NULL to avoid UAF
+    kernel_url_eo = NULL;
+    free(version_buff);
     free(full_url);
-    url_buff = NULL;
+    version_buff = NULL;
     full_url = NULL;
+    return SUCCESS_HANDLE_LINK;
+}
 
-    return 0;
+int download_kernel(const char *link) {
+    if(!link)
+        return ERROR_DOWNLOAD_KERNEL;
 
+    size_t command_len = strlen("wget ") + 1;
+    size_t link_len = strlen(link) + 1;
+    size_t total_len_used = command_len + link_len;
+
+    char *shell_command_buff = (char *) malloc(total_len_used);
+    memset(shell_command_buff, total_len_used, 0);
+    snprintf(shell_command_buff, total_len_used, "%s%s", "wget ", link);
+
+    if (system(shell_command_buff) == 127)
+        return ERROR_DOWNLOAD_KERNEL;
+        
+    
+    printf("%s\n", shell_command_buff);
+    return SUCCESS_DOWNLOAD_KERNEL;
 }
