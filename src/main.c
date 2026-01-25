@@ -50,6 +50,17 @@ struct kernel_version parse_version(char *version) {
                 kversion.minor = converted_number;
         }
 
+        if (offset == 1) {
+            char buff[2] = {0};
+            snprintf(buff, 2, "%.*s", offset, str + match[i].rm_so);
+            converted_number = atoi(buff);
+
+            if (i == 2)
+                kversion.middle = converted_number;
+            else
+                kversion.minor = converted_number;
+        }
+
         if (offset == 3) {
             char buff[4] = {0};
             snprintf(buff, 4, "%.*s", offset, str + match[i].rm_so);
