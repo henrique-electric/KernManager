@@ -19,7 +19,7 @@ error_t parser(int key, char *arg, struct argp_state *state) {
     case 'd':
          {
             struct kernel_version kver =  parse_version(arg);
-            printf("Major = %d\nMiddle = %d\nMinor = %d\n", kver.major, kver.middle, kver.minor);
+            download_kernel(&kver);
          }
         //printf("%d\n", kver.minor);
         break;
