@@ -17,8 +17,11 @@ error_t parser(int key, char *arg, struct argp_state *state) {
     switch (key)
     {
     case 'd':
-        struct kernel_version kver =  parse_version(arg);
-        printf("%d\n", kver.minor);
+         {
+            struct kernel_version kver =  parse_version(arg);
+            printf("Major = %d\nMiddle = %d\nMinor = %d\n", kver.major, kver.middle, kver.minor);
+         }
+        //printf("%d\n", kver.minor);
         break;
     
     default:
@@ -34,5 +37,5 @@ struct argp argp_struct = {
 };
 
 error_t parse_args(int argc, char *argv[]) {
-    argp_parse(&argp_struct, argc, argv, 0, 0, 0);
+    return argp_parse(&argp_struct, argc, argv, 0, 0, 0);
 }
