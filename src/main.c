@@ -30,44 +30,20 @@ struct kernel_version parse_version(char *version) {
     }
 //
 
-    kversion.major = (int) str[match[1].rm_so] - '0';
-    int converted_number = 0;   // Variable that will be used when converting the strings to integers;
 
-    // Run throught the matches
-    for (size_t i=2; i < 4; i++) {
-        size_t offset = match[i].rm_eo - match[i].rm_so; // Offset between the first digit to the last digit of the string match
+    kversion.major = (int) str[match[1].rm_so] - '0'; // Major Version has only 1 digit, so we can just go the the first index
 
-        // If the offset is two, we copy the two digits into a buffer with and then convert to an integer
-        if (offset == 2) {
-            char buff[3] = {0};
-            snprintf(buff, 3,"%.*s", offset, str + match[i].rm_so);
-            converted_number = atoi(buff);
+    int converted_number = 0;   
+    char buffer[9] = {0}; // Buffer to hold the number characters
+    snprintf(buffer, 3, "%.*s", match[2].rm_eo - match[2].rm_so, str + match[2].rm_so);
+    converted_number = atoi(buffer);
+    kversion.middle = converted_number;
+    memset(buffer, sizeof(char), 0); // Clear buffer for the next number
 
-            // Since both the middle and minor number can have two digits we'll handle both cases
-            if (i == 2)
-                kversion.middle = converted_number;
-            else
-                kversion.minor = converted_number;
-        }
 
-        if (offset == 1) {
-            char buff[2] = {0};
-            snprintf(buff, 2, "%.*s", offset, str + match[i].rm_so);
-            converted_number = atoi(buff);
-
-            if (i == 2)
-                kversion.middle = converted_number;
-            else
-                kversion.minor = converted_number;
-        }
-
-        if (offset == 3) {
-            char buff[4] = {0};
-            snprintf(buff, 4, "%.*s", offset, str + match[i].rm_so);
-            converted_number = atoi(buff);
-            kversion.minor = converted_number;
-        }
-    }
+    snprintf(buffer, 4, "%.*s", match[3].rm_eo - match[3].rm_so, str + match[3].rm_so);
+    converted_number = atoi(buffer);
+    kversion.minor = converted_number;
 
     regfree(&compiled_regex); // Free the regex allocated stuff
     return kversion;
