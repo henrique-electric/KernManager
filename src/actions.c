@@ -1,4 +1,7 @@
 #include <core.h>
+#include <regex.h>
+
+#define ERROR_HANDLE_LINK -1
 
 const char *kernel_url = "https://cdn.kernel.org/pub/linux/kernel/";
 int handle_link(const struct kernel_version *kversion) {
@@ -60,22 +63,25 @@ int handle_link(const struct kernel_version *kversion) {
     return SUCCESS_HANDLE_LINK;
 }
 
-int download_kernel(const char *link) {
+int download_kernel(char *link) {
     if(!link)
         return ERROR_DOWNLOAD_KERNEL;
 
     size_t command_len = strlen("wget ") + 1;
     size_t link_len = strlen(link) + 1;
-    size_t total_len_used = command_len + link_len;
+    size_t command_args = strlen("--tries=1 --read-timeout=4") + 1;
+    size_t total_len_used = command_len + link_len + command_args;
 
     char *shell_command_buff = (char *) malloc(total_len_used);
     memset(shell_command_buff, 0, total_len_used);
-    snprintf(shell_command_buff, total_len_used, "%s%s", "wget ", link);
+    snprintf(shell_command_buff, total_len_used, "%s%s%s", "wget ", link, " --tries=1 --read-timeout=4");
 
-    if (system(shell_command_buff) == 127)
-        return ERROR_DOWNLOAD_KERNEL;
+    if (system(shell_command_buff) != 0) {
+
+        fprintf(stderr ,"kernel version not found\n");
+        exit(EXIT_FAILURE);
+    }
         
     
-    printf("%s\n", shell_command_buff);
     return SUCCESS_DOWNLOAD_KERNEL;
 }
