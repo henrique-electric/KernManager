@@ -74,18 +74,47 @@ int download_kernel(char *link) {
 
     size_t command_len = strlen("wget ") + 1;
     size_t link_len = strlen(link) + 1;
-    size_t command_args = strlen("--tries=1 --read-timeout=4") + 1;
+    size_t command_args = strlen(" -q --tries=1 --read-timeout=4") + 1;
     size_t total_len_used = command_len + link_len + command_args;
 
     char *shell_command_buff = (char *) malloc(total_len_used);
     memset(shell_command_buff, 0, total_len_used);
-    snprintf(shell_command_buff, total_len_used, "%s%s%s", "wget ", link, " --tries=1 --read-timeout=6");
+    snprintf(shell_command_buff, total_len_used, "%s%s%s", "wget ", link, " -q --tries=1 --read-timeout=6");
 
     if (system(shell_command_buff) != 0) {
+        free(shell_command_buff);
         fprintf(stderr ,"kernel version not found\n");
         exit(EXIT_FAILURE);
     }
-        
+    
+    free(shell_command_buff);
     
     return SUCCESS_DOWNLOAD_KERNEL;
+}
+
+int unzip_kernel(const struct kernel_version *version) {
+    //TODO Add NULL handler
+
+    size_t file_name_len = strlen("linux-x.xx.xxx.tar.xz");
+    size_t command_len = strlen("tar xf ");
+    size_t total_buff_len = file_name_len + command_len + 1;
+    char *command_buff = (char *) malloc(total_buff_len);
+    memset(command_buff, 0, total_buff_len);
+
+    if (version->minor != MINOR_VERSION_NOT_SPECIFIED)
+        snprintf(command_buff, total_buff_len, "tar xf linux-%d.%d.%d.tar.xz", version->major, version->middle, version->minor);
+    else
+        snprintf(command_buff, total_buff_len, "tar xf linux-%d.%d.tar.xz", version->major, version->middle);
+
+    if (system(command_buff) != 0) {
+        free(command_buff);
+        fprintf(stderr, "Error unziping the kernel tarball");
+        exit(EXIT_FAILURE);
+    }
+
+    puts("Kernel tarball unzipped successfully");
+
+    free(command_buff);
+    command_buff = NULL;
+    return 0;
 }

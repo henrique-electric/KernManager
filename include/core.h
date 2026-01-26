@@ -25,6 +25,7 @@ error_t parser(int key, char *arg, struct argp_state *state);
 error_t parse_args(int argc, char *argv[]);
 int handle_link(const struct kernel_version *kversion);
 int download_kernel(char *link);
+int unzip_kernel(const struct kernel_version *version);
 
 extern struct argp_option options[];
 extern struct argp argp_struct;
