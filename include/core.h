@@ -12,12 +12,12 @@
 #define ERROR_DOWNLOAD_KERNEL -1
 #define SUCCESS_DOWNLOAD_KERNEL 0
 
+#define MINOR_VERSION_NOT_SPECIFIED -1  // For when the 
+
 struct kernel_version {
     int major;
     int middle;
     int minor;
-
-    int numbers_middle; // how many numbers there is on the middle ex.: 6.18.7 ---> X.18.X ---> 2
 };
 
 struct kernel_version parse_version(char *version);

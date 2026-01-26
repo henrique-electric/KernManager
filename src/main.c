@@ -2,13 +2,15 @@
 #include <regex.h>
 #include <assert.h>
 
+#define MATCH_INVALID_OFFSET -1
+
 struct kernel_version parse_version(char *version) {
     struct kernel_version kversion = {0};
 
 // Stuff used by regex.h functions
     regex_t compiled_regex;
     regmatch_t match[4];
-    const char *pattern = "^([0-9])\\.([0-9]{1,2})\\.([0-9]{1,3})$"; // Regex pattern used on the kernel version
+    const char *pattern = "^([0-9])\\.([0-9]{1,2})\\.?([0-9]{1,3})?$"; // Regex pattern used on the kernel version
 //
 
 //  Compile the regex
@@ -41,9 +43,13 @@ struct kernel_version parse_version(char *version) {
     memset(buffer, 0, sizeof(char)); // Clear buffer for the next number
 
 
-    snprintf(buffer, 4, "%.*s", match[3].rm_eo - match[3].rm_so, str + match[3].rm_so);
-    converted_number = atoi(buffer);
-    kversion.minor = converted_number;
+    if (match[3].rm_so != -1 && match[3].rm_eo != -1) {
+        snprintf(buffer, 4, "%.*s", match[3].rm_eo - match[3].rm_so, str + match[3].rm_so);
+        converted_number = atoi(buffer);
+        kversion.minor = converted_number;
+    } else {
+        kversion.minor = MINOR_VERSION_NOT_SPECIFIED;
+    }
 
     regfree(&compiled_regex); // Free the regex allocated stuff
     return kversion;

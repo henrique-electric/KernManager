@@ -50,7 +50,12 @@ int handle_link(const struct kernel_version *kversion) {
     snprintf(kernel_url_eo, version_path_len, version_buff); // Moves the version path to the buffer "vx/"
 
     kernel_url_eo = kernel_url_eo + version_path_len - 1; // Moves to the end of the version path inside inside the string
-    snprintf(kernel_url_eo, linux_tarball_file_name_len, "linux-%d.%d.%d.tar.xz", kversion->major, kversion->middle, kversion->minor); // Moves the linux tarball name at the end "linux-x.xx.xxx.tar.xz"
+    
+    if (kversion->minor != MINOR_VERSION_NOT_SPECIFIED)
+        snprintf(kernel_url_eo, linux_tarball_file_name_len, "linux-%d.%d.%d.tar.xz", kversion->major, kversion->middle, kversion->minor); // Moves the linux tarball name at the end "linux-x.xx.xxx.tar.xz"
+
+    else
+        snprintf(kernel_url_eo, linux_tarball_file_name_len, "linux-%d.%d.tar.xz", kversion->major, kversion->middle);
 
     download_kernel(full_url);
 
@@ -74,10 +79,9 @@ int download_kernel(char *link) {
 
     char *shell_command_buff = (char *) malloc(total_len_used);
     memset(shell_command_buff, 0, total_len_used);
-    snprintf(shell_command_buff, total_len_used, "%s%s%s", "wget ", link, " --tries=1 --read-timeout=4");
+    snprintf(shell_command_buff, total_len_used, "%s%s%s", "wget ", link, " --tries=1 --read-timeout=6");
 
     if (system(shell_command_buff) != 0) {
-
         fprintf(stderr ,"kernel version not found\n");
         exit(EXIT_FAILURE);
     }
