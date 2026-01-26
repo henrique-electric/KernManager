@@ -21,8 +21,13 @@ error_t parser(int key, char *arg, struct argp_state *state) {
             struct kernel_version kver =  parse_version(arg);
             handle_link(&kver);
          }
-        //printf("%d\n", kver.minor);
         break;
+    case 'b':
+         {
+            struct kernel_version kver = parse_version(arg);
+            unzip_kernel(&kver);
+            break;
+         }
     
     default:
         return ARGP_ERR_UNKNOWN;
