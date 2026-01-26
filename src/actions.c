@@ -86,9 +86,9 @@ int download_kernel(char *link) {
         fprintf(stderr ,"kernel version not found\n");
         exit(EXIT_FAILURE);
     }
-    
+
+    puts("Kernel successfully downloaded");
     free(shell_command_buff);
-    
     return SUCCESS_DOWNLOAD_KERNEL;
 }
 
