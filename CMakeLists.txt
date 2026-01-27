@@ -8,5 +8,5 @@ target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra)
 
 if(APPLE)
     target_link_libraries(${PROJECT_NAME} ${PROJECT_SOURCE_DIR}/libargp.a)
-    target_include_directories(${PROJECT_NAME} PRIVATE opt/homebrew/include/)
+    target_include_directories(${PROJECT_NAME} PRIVATE /opt/homebrew/include/)
 endif()
