@@ -4,7 +4,7 @@ project("KernManager")
 include_directories(include/)
 
 add_executable(${PROJECT_NAME} src/main.c src/args.c src/actions.c)
-target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -fsanitize=address -g)
+target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra)
 
 if(APPLE)
     target_link_libraries(${PROJECT_NAME} ${PROJECT_SOURCE_DIR}/libargp.a)
