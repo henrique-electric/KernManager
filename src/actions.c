@@ -114,7 +114,7 @@ int unzip_kernel(const struct kernel_version *version) {
 
     if (system(command_buff) != 0) {
         free(command_buff);
-        fprintf(stderr, "Error unziping the kernel tarball");
+        fprintf(stderr, "Error unziping the kernel tarball, file maybe don't exist");
         exit(EXIT_FAILURE);
     }
 
