@@ -2,3 +2,4 @@ libargp.a
 KernManager
 build
 argp.h
+.cache
