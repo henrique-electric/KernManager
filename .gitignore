@@ -3,3 +3,4 @@ KernManager
 build
 argp.h
 .cache
+compile_commands.json
