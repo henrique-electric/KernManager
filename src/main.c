@@ -35,7 +35,7 @@ struct kernel_version parse_version(char *version) {
 
     kversion.major = (int) str[match[1].rm_so] - '0'; // Major Version has only 1 digit, so we can just go the the first index
 
-    int converted_number = 0;   
+    int converted_number = 0;
     char buffer[9] = {0}; // Buffer to hold the number characters
     snprintf(buffer, 3, "%.*s", match[2].rm_eo - match[2].rm_so, str + match[2].rm_so);
     converted_number = atoi(buffer);
@@ -55,8 +55,8 @@ struct kernel_version parse_version(char *version) {
     return kversion;
 }
 
-
 int main(int argc, char *argv[])
 {
+    create_config_dir();
     return parse_args(argc, argv);
 }
