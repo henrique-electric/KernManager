@@ -25,6 +25,7 @@ error_t parser(int key, char *arg, struct argp_state *state) {
     case 'b':
          {
             struct kernel_version kver = parse_version(arg);
+            kver.str_version = arg;
             unzip_kernel(&kver);
             break;
          }

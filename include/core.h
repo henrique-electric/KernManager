@@ -18,6 +18,7 @@ struct kernel_version {
     int major;
     int middle;
     int minor;
+    const char *str_version;
 };
 
 struct kernel_version parse_version(char *version);
