@@ -3,6 +3,8 @@
 
 #define ERROR_HANDLE_LINK -1
 
+// clang-format off
+
 const char *kernel_url = "https://cdn.kernel.org/pub/linux/kernel/";
 int handle_link(const struct kernel_version *kversion) {
     if(!kversion)
@@ -63,7 +65,7 @@ int handle_link(const struct kernel_version *kversion) {
         snprintf(kernel_url_eo, linux_tarball_file_name_len, "linux-%d.%d.tar.xz", kversion->major, kversion->middle);
 
 
-    download_kernel(full_url);
+    download_kernel(full_url, kversion);
 
     // Free up all malloc memory and set pointers to NULL to avoid UAF
     kernel_url_eo = NULL;
@@ -74,19 +76,23 @@ int handle_link(const struct kernel_version *kversion) {
     return SUCCESS_HANDLE_LINK;
 }
 
-int download_kernel(char *link) {
+int download_kernel(char *link, const struct kernel_version *kvervion) {
     if(!link)
         return ERROR_DOWNLOAD_KERNEL;
 
     size_t command_len = strlen("wget ") + 1;
     size_t link_len = strlen(link) + 1;
-    size_t command_args = strlen(" -q --tries=1 --read-timeout=4") + 1;
+    size_t command_args = strlen(" -q --tries=1 --read-timeout=4 -O linux-*.**.***.tar.xz") + 1;
     size_t total_len_used = command_len + link_len + command_args;
 
     char *shell_command_buff = (char *) malloc(total_len_used);
     memset(shell_command_buff, 0, total_len_used);
-    snprintf(shell_command_buff, total_len_used, "%s%s%s", "wget ", link, " -q --tries=1 --read-timeout=6");
 
+    if (kvervion->minor == MINOR_VERSION_NOT_SPECIFIED)
+      snprintf(shell_command_buff, total_len_used, "%s%s%s -O linux-%d.%d.0.tar.xz", "wget ", link, " -q --tries=1 --read-timeout=6", kvervion->major, kvervion->middle);
+    else
+      snprintf(shell_command_buff, total_len_used, "%s%s%s -O linux-%d.%d.%d.tar.xz", "wget ", link, " -q --tries=1 --read-timeout=6", kvervion->major, kvervion->middle, kvervion->minor);
+       
     if (system(shell_command_buff) != 0) {
         free(shell_command_buff);
         fprintf(stderr ,"kernel version not found\n");
@@ -110,7 +116,7 @@ int unzip_kernel(const struct kernel_version *version) {
     if (version->minor != MINOR_VERSION_NOT_SPECIFIED)
         snprintf(command_buff, total_buff_len, "tar xf linux-%d.%d.%d.tar.xz", version->major, version->middle, version->minor);
     else
-        snprintf(command_buff, total_buff_len, "tar xf linux-%d.%d.tar.xz", version->major, version->middle);
+        snprintf(command_buff, total_buff_len, "tar xf linux-%d.%d.0.tar.xz", version->major, version->middle);
 
     if (system(command_buff) != 0) {
         free(command_buff);

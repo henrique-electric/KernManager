@@ -1,3 +1,5 @@
+// clang-format off
+
 #ifndef CORE_H
 #define CORE_H
 #include <stdio.h>
@@ -5,6 +7,7 @@
 #include <argp.h>
 #include <string.h>
 #include <stdint.h>
+
 
 #define ERROR_HANDLE_LINK -1
 #define SUCCESS_HANDLE_LINK 0
@@ -25,7 +28,7 @@ struct kernel_version parse_version(char *version);
 error_t parser(int key, char *arg, struct argp_state *state);
 error_t parse_args(int argc, char *argv[]);
 int handle_link(const struct kernel_version *kversion);
-int download_kernel(char *link);
+int download_kernel(char *link, const struct kernel_version *kvervion);
 int unzip_kernel(const struct kernel_version *version);
 
 extern struct argp_option options[];

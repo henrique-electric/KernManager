@@ -1,5 +1,8 @@
 #include "core.h"
 
+// clang-format off
+
+extern void build(const struct kernel_version *kver);
 
 struct argp_option options[] = {
     {.key = 'd', .name = "download", .arg = "VERSION", .doc = "Downloads a new kernel source from kernel.org"},
@@ -27,6 +30,7 @@ error_t parser(int key, char *arg, struct argp_state *state) {
             struct kernel_version kver = parse_version(arg);
             kver.str_version = arg;
             unzip_kernel(&kver);
+            build(&kver);
             break;
          }
     
