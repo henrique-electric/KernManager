@@ -3,7 +3,7 @@ project("KernManager")
 
 include_directories(include/)
 
-add_executable(${PROJECT_NAME} src/main.c src/args.c src/actions.c)
+add_executable(${PROJECT_NAME} src/main.c src/args.c src/actions.c src/build.cpp)
 target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra)
 
 if(APPLE)
