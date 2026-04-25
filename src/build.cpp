@@ -10,7 +10,7 @@
 extern "C" void build(const struct kernel_version *kver) {
     std::string version = kver->str_version;;
     std::string user_home = getenv("HOME");
-    std::string linux_path;
+    std::string linux_path = "./linux-" + std::to_string(kver->major) + "." + std::to_string(kver->middle) + "." + std::to_string(kver->minor);
     int minor = kver->minor;
 
     if (kver->minor == MINOR_VERSION_NOT_SPECIFIED || kver->minor == 0) {
@@ -40,12 +40,16 @@ extern "C" void build(const struct kernel_version *kver) {
     }
     
 
-    if (system("make O=build -j$(nproc) && make O=build modules_prepare && make O=build modules_install && sudo cp build/arch/x86/boot/bzImage /boot/linux-custom") == -1) {
+    if (system("make O=build -j$(nproc) && make O=build modules_prepare && sudo make O=build modules_install && sudo cp build/arch/x86/boot/bzImage /boot/linux-custom") == -1) {
       std::cout << "Error building the kernel and installing\n";
       exit(EXIT_FAILURE);
     }
+   
+    if (kver->minor == MINOR_VERSION_NOT_SPECIFIED)
+      cmd = "sudo rm /lib/modules/" + std::to_string(kver->major) + "." + std::to_string(kver->middle) + "/build";
+    else
+      cmd = "sudo rm /lib/modules/" + std::to_string(kver->major) + "." + std::to_string(kver->middle) + "." + std::to_string(kver->minor) + "/build";
     
-    cmd = "sudo rm /lib/modules/" + version + "/build";
     if (system(cmd.c_str()) == -1) {
       std::cout << "Error removing modules build dir symlink\n";
       exit(EXIT_FAILURE);
