@@ -55,7 +55,7 @@ extern "C" void build(const struct kernel_version *kver) {
       exit(EXIT_FAILURE);
     }
     
-    if(system("make O=build clean") == -1) {
+    if(system("pushd build && make clean") == -1) {
       std::cout << "Error cleaning build directory\n";
       exit(EXIT_FAILURE);
     }
